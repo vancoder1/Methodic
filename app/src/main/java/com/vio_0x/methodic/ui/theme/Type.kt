@@ -1,4 +1,4 @@
-package com.example.methodic.ui.theme
+package com.vio_0x.methodic.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

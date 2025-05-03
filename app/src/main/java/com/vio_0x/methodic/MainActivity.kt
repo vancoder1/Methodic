@@ -1,4 +1,4 @@
-package com.example.methodic
+package com.vio_0x.methodic
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.methodic.ui.theme.MethodicTheme
+import com.vio_0x.methodic.ui.theme.MethodicTheme
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*

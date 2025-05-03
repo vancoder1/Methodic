@@ -1,4 +1,4 @@
-package com.example.methodic
+package com.vio_0x.methodic
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flag
