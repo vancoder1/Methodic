@@ -35,9 +35,10 @@ import com.vio_0x.methodic.ui.theme.MethodicTheme
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.foundation.BorderStroke // <-- ADDED Import for BorderStroke
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.automirrored.outlined.PlaylistAddCheck
-
 
 // --- Activity ---
 class MainActivity : ComponentActivity() {
@@ -62,7 +63,7 @@ fun ToDoApp() {
     var newTodoDescription by rememberSaveable { mutableStateOf("") }
     var selectedPriority by rememberSaveable { mutableStateOf(TaskPriority.MEDIUM) }
     var todoItems = remember { mutableStateListOf<ToDoItem>() }
-    var nextId by rememberSaveable { mutableStateOf(1) }
+    var nextId by rememberSaveable { mutableIntStateOf(1) }
     var showAddSheet by rememberSaveable { mutableStateOf(false) }
     var showCompletedTasks by rememberSaveable { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
@@ -328,7 +329,7 @@ fun ToDoApp() {
                             key = { _, item -> "active-${item.id}" } // More specific key
                         ) { _, item -> // Removed index as it's not used directly
                             ToDoListItem(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItem(),
                                 item = item,
                                 onToggleComplete = {
                                     val index = todoItems.indexOfFirst { it.id == item.id } // Safer find
@@ -390,7 +391,7 @@ fun ToDoApp() {
                             key = { _, item -> "completed-${item.id}" } // More specific key
                         ) { _, item -> // Removed index as it's not used directly
                             ToDoListItem(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItem(),
                                 item = item,
                                 onToggleComplete = {
                                     val index = todoItems.indexOfFirst { it.id == item.id } // Safer find
@@ -471,7 +472,7 @@ fun ToDoApp() {
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     leadingIcon = {
-                        Icon(Icons.Default.Assignment, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = null)
                     },
                     shape = RoundedCornerShape(12.dp) // Consistent rounding
                 )
@@ -487,7 +488,7 @@ fun ToDoApp() {
                         .fillMaxWidth()
                         .height(100.dp),
                     leadingIcon = {
-                        Icon(Icons.Default.Notes, contentDescription = null, modifier=Modifier.padding(top=12.dp)) // Align icon better
+                        Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null, modifier=Modifier.padding(top=12.dp)) // Align icon better
                     },
                     shape = RoundedCornerShape(12.dp) // Consistent rounding
                 )
@@ -506,7 +507,7 @@ fun ToDoApp() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TaskPriority.values().forEach { priority ->
+                    TaskPriority.entries.forEach { priority ->
                         PriorityChip(
                             priority = priority,
                             selected = priority == selectedPriority,
