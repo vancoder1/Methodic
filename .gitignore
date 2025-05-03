@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Keys/Signed APKS and Bundles
+methodic.jks
+/app/release
