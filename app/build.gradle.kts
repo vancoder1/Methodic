@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.methodic"
+    namespace = "com.vio_0x.methodic"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.methodic"
+        applicationId = rootProject.extra["MethodicId"] as String
         minSdk = 24
         targetSdk = 35
         versionCode = 1
