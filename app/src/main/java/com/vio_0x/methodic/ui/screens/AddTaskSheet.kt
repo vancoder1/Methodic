@@ -47,6 +47,7 @@ fun AddTaskSheetContent(
             text = "New Task",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
@@ -75,7 +76,7 @@ fun AddTaskSheetContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Priority", style = MaterialTheme.typography.titleMedium)
+        Text("Priority", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
