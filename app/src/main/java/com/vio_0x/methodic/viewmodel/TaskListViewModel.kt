@@ -1,56 +1,25 @@
-package com.vio_0x.methodic
+package com.vio_0x.methodic.viewmodel
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import com.vio_0x.methodic.data.TaskFilter
+import com.vio_0x.methodic.data.TaskPriority
+import com.vio_0x.methodic.data.ToDoItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 
-// --- ENUM DEFINITIONS ---
-enum class TaskPriority(
-    val displayName: String,
-    val color: Color,
-    val icon: ImageVector
-) {
-    HIGH("High", Color(0xFFE57373), Icons.Default.KeyboardDoubleArrowUp),
-    MEDIUM("Medium", Color(0xFFFFB74D), Icons.Default.Flag),
-    LOW("Low", Color(0xFF81C784), Icons.Default.Remove)
-}
+// Renamed from MainViewModel
+class TaskListViewModel : ViewModel() {
 
-enum class TaskFilter(val displayName: String) {
-    ALL("All Tasks"),
-    HIGH("High Priority"),
-    MEDIUM("Medium Priority"),
-    LOW("Low Priority")
-}
-
-// --- UI State ---
-data class MainUiState(
-    val items: List<ToDoItem> = emptyList(),
-    val filter: TaskFilter = TaskFilter.ALL,
-    val showCompleted: Boolean = true,
-    val showAddSheet: Boolean = false,
-    val nextId: Int = 1,
-    val newTaskText: String = "",
-    val newTaskDescription: String = "",
-    val newTaskPriority: TaskPriority = TaskPriority.MEDIUM
-)
-
-class MainViewModel : ViewModel() {
-
-    // --- Private Mutable State ---
-    private val _uiState = MutableStateFlow(MainUiState())
-
-    // --- Public Immutable State ---
-    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(TaskListUiState())
+    val uiState: StateFlow<TaskListUiState> = _uiState.asStateFlow()
 
     // --- Events / Actions ---
+
     fun updateNewTaskText(text: String) {
         _uiState.update { it.copy(newTaskText = text) }
     }
@@ -68,7 +37,15 @@ class MainViewModel : ViewModel() {
     }
 
     fun hideAddTaskSheet() {
-        _uiState.update { it.copy(showAddSheet = false) }
+        // Reset fields when hiding the sheet explicitly
+        _uiState.update {
+            it.copy(
+                showAddSheet = false,
+                newTaskText = "",
+                newTaskDescription = "",
+                newTaskPriority = TaskPriority.MEDIUM
+            )
+        }
     }
 
     fun addTask() {
@@ -82,17 +59,30 @@ class MainViewModel : ViewModel() {
                     text = currentState.newTaskText,
                     description = currentState.newTaskDescription.takeIf { it.isNotBlank() },
                     priority = currentState.newTaskPriority,
-                    createdAt = Date() // Use current date
+                    createdAt = Date()
                 )
                 currentState.copy(
                     items = currentState.items + newItem,
                     nextId = currentState.nextId + 1,
-                    // Reset add sheet fields
+                    // Reset add sheet fields & hide sheet
                     newTaskText = "",
                     newTaskDescription = "",
                     newTaskPriority = TaskPriority.MEDIUM,
-                    showAddSheet = false // Hide sheet after adding
+                    showAddSheet = false
                 )
+            }
+        }
+    }
+
+    fun addTaskFromItem(item: ToDoItem) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                if (currentState.items.any { it.id == item.id }) {
+                    currentState // Avoid duplicates
+                } else {
+                    currentState.copy(items = currentState.items + item)
+                    // Consider sorting or placing it back if needed
+                }
             }
         }
     }
@@ -130,20 +120,5 @@ class MainViewModel : ViewModel() {
 
     fun toggleShowCompleted() {
         _uiState.update { it.copy(showCompleted = !it.showCompleted) }
-    }
-
-    // Helper for Undo Delete
-    fun addTaskFromItem(item: ToDoItem) {
-        viewModelScope.launch {
-            _uiState.update { currentState ->
-                // Avoid adding duplicates if the item somehow already exists
-                if (currentState.items.any { it.id == item.id }) {
-                    currentState
-                } else {
-                    // Re-add the item
-                    currentState.copy(items = currentState.items + item)
-                }
-            }
-        }
     }
 }

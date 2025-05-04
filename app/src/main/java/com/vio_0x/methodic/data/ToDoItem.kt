@@ -1,6 +1,6 @@
-package com.vio_0x.methodic
+package com.vio_0x.methodic.data
 
-import java.util.*
+import java.util.Date
 
 data class ToDoItem(
     val id: Int,
