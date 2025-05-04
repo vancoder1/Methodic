@@ -50,8 +50,8 @@ import java.util.Date
 @Composable
 fun ToDoListItem(
     item: ToDoItem,
-    onToggleComplete: () -> Unit,
-    onDeleteItem: () -> Unit,
+    onToggleComplete: (item: ToDoItem) -> Unit, // Expects the item
+    onDeleteItem: (item: ToDoItem) -> Unit,     // Expects the item
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun ToDoListItem(
             ) {
                 Checkbox(
                     checked = item.isCompleted,
-                    onCheckedChange = { onToggleComplete() },
+                    onCheckedChange = { onToggleComplete(item) }, // Pass item
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.primary,
                         uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -133,7 +133,7 @@ fun ToDoListItem(
                 }
 
                 IconButton(
-                    onClick = onDeleteItem,
+                    onClick = { onDeleteItem(item) }, // Pass item
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
@@ -189,8 +189,8 @@ fun ToDoListItemPreview() {
     MethodicTheme {
         ToDoListItem(
             item = ToDoItem(1, "Buy groceries", "Milk, Bread, Eggs", isCompleted = false, priority = TaskPriority.HIGH),
-            onToggleComplete = {},
-            onDeleteItem = {}
+            onToggleComplete = {}, // Preview doesn't need action
+            onDeleteItem = {}     // Preview doesn't need action
         )
     }
 }
@@ -200,8 +200,8 @@ fun ToDoListItemCompletedPreview() {
     MethodicTheme {
         ToDoListItem(
             item = ToDoItem(2, "Walk the dog", isCompleted = true, priority = TaskPriority.LOW, createdAt = Date(System.currentTimeMillis() - 86400000), completedAt = Date()),
-            onToggleComplete = {},
-            onDeleteItem = {}
+            onToggleComplete = {}, // Preview doesn't need action
+            onDeleteItem = {}     // Preview doesn't need action
         )
     }
 }
