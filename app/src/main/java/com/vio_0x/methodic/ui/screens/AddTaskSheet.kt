@@ -68,8 +68,8 @@ fun AddTaskSheetContent(
             value = uiState.newTaskDescription,
             onValueChange = onUpdateTaskDescription,
             label = { Text("Description (Optional)") },
-            modifier = Modifier.fillMaxWidth().height(100.dp),
-            leadingIcon = { Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null, modifier = Modifier.padding(top = 12.dp)) },
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = { Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null) },
             shape = RoundedCornerShape(12.dp)
         )
 
