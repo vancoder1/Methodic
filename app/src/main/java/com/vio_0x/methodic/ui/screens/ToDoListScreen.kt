@@ -75,14 +75,17 @@ import kotlinx.coroutines.launch
 fun TodoListScreen(
     viewModel: TaskListViewModel = viewModel() // Use the renamed ViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    // Collect the combined state which includes UI settings and the items list from DB
+    val combinedState by viewModel.combinedState.collectAsStateWithLifecycle()
+    val (uiState, items) = combinedState // Destructure the Pair
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Filter tasks based on ViewModel state
-    val filteredTasks = remember(uiState.items, uiState.filter, uiState.showCompleted) {
-        uiState.items.filter { item ->
+    // Filter tasks based on the items list from combinedState and UI filter settings
+    val filteredTasks = remember(items, uiState.filter, uiState.showCompleted) {
+        items.filter { item -> // Use 'items' from combinedState
             val matchesFilter = when (uiState.filter) {
                 TaskFilter.ALL -> true
                 TaskFilter.HIGH -> item.priority == com.vio_0x.methodic.data.TaskPriority.HIGH
@@ -174,16 +177,28 @@ fun TodoListScreen(
                 tonalElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("$completedTasks done", style = MaterialTheme.typography.bodySmall)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Icon(Icons.Default.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                        Icon(
+                            Icons.Default.Schedule,
+                            null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("$activeTasks active", style = MaterialTheme.typography.bodySmall)
                     }
@@ -207,13 +222,13 @@ fun TodoListScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (filteredTasks.isEmpty() && uiState.items.isNotEmpty()) {
+            if (filteredTasks.isEmpty() && items.isNotEmpty()) { // Check 'items' from combinedState
                 EmptyState(
                     icon = Icons.Outlined.FilterAltOff,
                     title = "No matching tasks",
                     message = "Adjust your filters or add new tasks."
                 )
-            } else if (uiState.items.isEmpty()) {
+            } else if (items.isEmpty()) { // Check 'items' from combinedState
                 EmptyState(
                     icon = Icons.AutoMirrored.Outlined.PlaylistAddCheck,
                     title = "Your task list is empty",
@@ -221,34 +236,46 @@ fun TodoListScreen(
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
                     contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp) // Padding for FAB
                 ) {
                     val activeList = groupedTasks[false] ?: emptyList()
                     if (activeList.isNotEmpty()) {
                         item { ListHeader("Active Tasks (${activeList.size})") }
-                        itemsIndexed(items = activeList, key = { _, item -> "active-${item.id}" }) { _, item ->
+                        itemsIndexed(
+                            items = activeList,
+                            key = { _, item -> "active-${item.id}" }) { _, item ->
                             ToDoListItem(
                                 modifier = Modifier.animateItem(),
                                 item = item,
-                                onToggleComplete = { /* ... Snackbar logic ... */
-                                    val originalStatus = item.isCompleted
-                                    viewModel.toggleTaskCompletion(item.id)
+                                onToggleComplete = { toggledItem -> // Lambda now receives the item
+                                    val originalStatus = toggledItem.isCompleted
+                                    viewModel.toggleTaskCompletion(toggledItem) // Pass the whole item
                                     scope.launch {
-                                        val message = if (!originalStatus) "Task '${item.text}' completed" else "Task '${item.text}' marked active"
-                                        val result = snackbarHostState.showSnackbar(message, actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val message =
+                                            if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
+                                        val result = snackbarHostState.showSnackbar(
+                                            message,
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
-                                            viewModel.toggleTaskCompletion(item.id) // Undo
+                                            viewModel.toggleTaskCompletion(toggledItem) // Pass item to undo
                                         }
                                     }
                                 },
-                                onDeleteItem = { /* ... Snackbar logic ... */
-                                    val removedItem = item
-                                    viewModel.deleteTask(item.id)
+                                onDeleteItem = { deletedItem -> // Lambda now receives the item
+                                    viewModel.deleteTask(deletedItem.id)
                                     scope.launch {
-                                        val result = snackbarHostState.showSnackbar("Task '${removedItem.text}' deleted", actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val result = snackbarHostState.showSnackbar(
+                                            "Task '${deletedItem.text}' deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
-                                            viewModel.addTaskFromItem(removedItem) // Undo
+                                            viewModel.reinsertItem(deletedItem) // Use reinsertItem to undo
                                         }
                                     }
                                 }
@@ -259,28 +286,38 @@ fun TodoListScreen(
                     val completedList = groupedTasks[true] ?: emptyList()
                     if (uiState.showCompleted && completedList.isNotEmpty()) {
                         item { Spacer(modifier = Modifier.height(16.dp)); ListHeader("Completed Tasks (${completedList.size})") }
-                        itemsIndexed(items = completedList, key = { _, item -> "completed-${item.id}" }) { _, item ->
+                        itemsIndexed(
+                            items = completedList,
+                            key = { _, item -> "completed-${item.id}" }) { _, item ->
                             ToDoListItem(
                                 modifier = Modifier.animateItem(),
                                 item = item,
-                                onToggleComplete = { /* ... Snackbar logic ... */
-                                    val originalStatus = item.isCompleted
-                                    viewModel.toggleTaskCompletion(item.id)
+                                onToggleComplete = { toggledItem -> // Lambda now receives the item
+                                    val originalStatus = toggledItem.isCompleted
+                                    viewModel.toggleTaskCompletion(toggledItem) // Pass the whole item
                                     scope.launch {
-                                        val message = if (!originalStatus) "Task '${item.text}' completed" else "Task '${item.text}' marked active"
-                                        val result = snackbarHostState.showSnackbar(message, actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val message =
+                                            if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
+                                        val result = snackbarHostState.showSnackbar(
+                                            message,
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
-                                            viewModel.toggleTaskCompletion(item.id) // Undo
+                                            viewModel.toggleTaskCompletion(toggledItem) // Pass item to undo
                                         }
                                     }
                                 },
-                                onDeleteItem = { /* ... Snackbar logic ... */
-                                    val removedItem = item
-                                    viewModel.deleteTask(item.id)
+                                onDeleteItem = { deletedItem -> // Lambda now receives the item
+                                    viewModel.deleteTask(deletedItem.id)
                                     scope.launch {
-                                        val result = snackbarHostState.showSnackbar("Task '${removedItem.text}' deleted", actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val result = snackbarHostState.showSnackbar(
+                                            "Task '${deletedItem.text}' deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
-                                            viewModel.addTaskFromItem(removedItem) // Undo
+                                            viewModel.reinsertItem(deletedItem) // Use reinsertItem to undo
                                         }
                                     }
                                 }
@@ -312,17 +349,17 @@ fun TodoListScreen(
     }
 }
 
-// Preview might need a fake ViewModel or state for proper rendering
+// Preview needs adjustment as ViewModel now requires Application context
 @Preview(showBackground = true, widthDp = 360, heightDp = 740)
 @Composable
 fun TodoListScreenPreview() {
     MethodicTheme {
-        // This preview will likely show an empty state or require
-        // providing a fake ViewModel/State for a more meaningful preview.
+        // Previewing components that require a ViewModel with Application context
+        // is complex. Often, you'd preview smaller, stateless components or use
+        // a fake ViewModel/DI framework for previews.
+        // For now, just show a placeholder.
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("ToDo List Screen Preview (ViewModel Required)")
+            Text("ToDo List Screen Preview (Requires ViewModel)")
         }
-        // Example of providing state (requires a mechanism to fake the ViewModel):
-        // TodoListScreenContent(uiState = TaskListUiState(items = listOf(...)), onAction = {})
     }
 }

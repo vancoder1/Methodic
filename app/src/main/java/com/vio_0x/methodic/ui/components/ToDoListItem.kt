@@ -50,8 +50,8 @@ import java.util.Date
 @Composable
 fun ToDoListItem(
     item: ToDoItem,
-    onToggleComplete: () -> Unit,
-    onDeleteItem: () -> Unit,
+    onToggleComplete: (item: ToDoItem) -> Unit, // Expects the item
+    onDeleteItem: (item: ToDoItem) -> Unit,     // Expects the item
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun ToDoListItem(
             ) {
                 Checkbox(
                     checked = item.isCompleted,
-                    onCheckedChange = { onToggleComplete() },
+                    onCheckedChange = { onToggleComplete(item) }, // Pass item
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.primary,
                         uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -99,22 +99,20 @@ fun ToDoListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     val priority = item.priority
-                    if (priority != TaskPriority.MEDIUM) { // Only show non-medium
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = priority.icon,
-                                contentDescription = "Priority: ${priority.displayName}",
-                                tint = priority.color,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = priority.displayName,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = priority.color
-                            )
-                        }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = priority.icon,
+                            contentDescription = "Priority: ${priority.displayName}",
+                            tint = priority.color,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = priority.displayName,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = priority.color
+                        )
                     }
                 }
 
@@ -133,7 +131,7 @@ fun ToDoListItem(
                 }
 
                 IconButton(
-                    onClick = onDeleteItem,
+                    onClick = { onDeleteItem(item) }, // Pass item
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
@@ -188,20 +186,34 @@ fun ToDoListItem(
 fun ToDoListItemPreview() {
     MethodicTheme {
         ToDoListItem(
-            item = ToDoItem(1, "Buy groceries", "Milk, Bread, Eggs", isCompleted = false, priority = TaskPriority.HIGH),
-            onToggleComplete = {},
-            onDeleteItem = {}
+            item = ToDoItem(
+                1,
+                "Buy groceries",
+                "Milk, Bread, Eggs",
+                isCompleted = false,
+                priority = TaskPriority.HIGH
+            ),
+            onToggleComplete = {}, // Preview doesn't need action
+            onDeleteItem = {}     // Preview doesn't need action
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ToDoListItemCompletedPreview() {
     MethodicTheme {
         ToDoListItem(
-            item = ToDoItem(2, "Walk the dog", isCompleted = true, priority = TaskPriority.LOW, createdAt = Date(System.currentTimeMillis() - 86400000), completedAt = Date()),
-            onToggleComplete = {},
-            onDeleteItem = {}
+            item = ToDoItem(
+                2,
+                "Walk the dog",
+                isCompleted = true,
+                priority = TaskPriority.LOW,
+                createdAt = Date(System.currentTimeMillis() - 86400000),
+                completedAt = Date()
+            ),
+            onToggleComplete = {}, // Preview doesn't need action
+            onDeleteItem = {}     // Preview doesn't need action
         )
     }
 }

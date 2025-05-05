@@ -34,14 +34,27 @@ fun PriorityChip(
     val icon = priority.icon
     val text = priority.displayName
 
-    val targetBackgroundColor = if (selected) color.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
-    val animatedBackgroundColor by animateColorAsState(targetBackgroundColor, label = "Chip Background ${priority.name}")
+    val targetBackgroundColor =
+        if (selected) color.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surfaceColorAtElevation(
+            1.dp
+        )
+    val animatedBackgroundColor by animateColorAsState(
+        targetBackgroundColor,
+        label = "Chip Background ${priority.name}"
+    )
 
-    val targetBorderColor = if (selected) color else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-    val animatedBorderColor by animateColorAsState(targetBorderColor, label = "Chip Border ${priority.name}")
+    val targetBorderColor =
+        if (selected) color else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+    val animatedBorderColor by animateColorAsState(
+        targetBorderColor,
+        label = "Chip Border ${priority.name}"
+    )
 
     val targetTextColor = if (selected) color else MaterialTheme.colorScheme.onSurfaceVariant
-    val animatedTextColor by animateColorAsState(targetTextColor, label = "Chip Text ${priority.name}")
+    val animatedTextColor by animateColorAsState(
+        targetTextColor,
+        label = "Chip Text ${priority.name}"
+    )
 
     Surface(
         modifier = modifier.height(36.dp),

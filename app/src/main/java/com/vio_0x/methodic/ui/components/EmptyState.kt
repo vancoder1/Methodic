@@ -30,7 +30,9 @@ fun EmptyState(icon: ImageVector, title: String, message: String) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(80.dp).alpha(0.6f),
+            modifier = Modifier
+                .size(80.dp)
+                .alpha(0.6f),
             tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
