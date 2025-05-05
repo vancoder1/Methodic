@@ -99,22 +99,20 @@ fun ToDoListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     val priority = item.priority
-                    if (priority != TaskPriority.MEDIUM) { // Only show non-medium
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = priority.icon,
-                                contentDescription = "Priority: ${priority.displayName}",
-                                tint = priority.color,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = priority.displayName,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = priority.color
-                            )
-                        }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = priority.icon,
+                            contentDescription = "Priority: ${priority.displayName}",
+                            tint = priority.color,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = priority.displayName,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = priority.color
+                        )
                     }
                 }
 
