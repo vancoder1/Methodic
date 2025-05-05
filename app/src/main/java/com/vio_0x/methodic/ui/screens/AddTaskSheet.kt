@@ -76,7 +76,11 @@ fun AddTaskSheetContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Priority", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            "Priority",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -97,7 +101,9 @@ fun AddTaskSheetContent(
         Button(
             onClick = onAddTask,
             enabled = uiState.newTaskText.isNotBlank(),
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text("Add Task")

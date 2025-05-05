@@ -69,6 +69,7 @@ private val DarkColorScheme = darkColorScheme(
     outline = Color(0xFF757575)
 )
 
+@Suppress("DEPRECATION")
 @Composable
 fun MethodicTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -81,6 +82,7 @@ fun MethodicTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

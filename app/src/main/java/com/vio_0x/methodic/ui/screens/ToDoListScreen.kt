@@ -177,16 +177,28 @@ fun TodoListScreen(
                 tonalElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("$completedTasks done", style = MaterialTheme.typography.bodySmall)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Icon(Icons.Default.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                        Icon(
+                            Icons.Default.Schedule,
+                            null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("$activeTasks active", style = MaterialTheme.typography.bodySmall)
                     }
@@ -224,13 +236,17 @@ fun TodoListScreen(
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
                     contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp) // Padding for FAB
                 ) {
                     val activeList = groupedTasks[false] ?: emptyList()
                     if (activeList.isNotEmpty()) {
                         item { ListHeader("Active Tasks (${activeList.size})") }
-                        itemsIndexed(items = activeList, key = { _, item -> "active-${item.id}" }) { _, item ->
+                        itemsIndexed(
+                            items = activeList,
+                            key = { _, item -> "active-${item.id}" }) { _, item ->
                             ToDoListItem(
                                 modifier = Modifier.animateItem(),
                                 item = item,
@@ -238,8 +254,13 @@ fun TodoListScreen(
                                     val originalStatus = toggledItem.isCompleted
                                     viewModel.toggleTaskCompletion(toggledItem) // Pass the whole item
                                     scope.launch {
-                                        val message = if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
-                                        val result = snackbarHostState.showSnackbar(message, actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val message =
+                                            if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
+                                        val result = snackbarHostState.showSnackbar(
+                                            message,
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
                                             viewModel.toggleTaskCompletion(toggledItem) // Pass item to undo
                                         }
@@ -248,7 +269,11 @@ fun TodoListScreen(
                                 onDeleteItem = { deletedItem -> // Lambda now receives the item
                                     viewModel.deleteTask(deletedItem.id)
                                     scope.launch {
-                                        val result = snackbarHostState.showSnackbar("Task '${deletedItem.text}' deleted", actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val result = snackbarHostState.showSnackbar(
+                                            "Task '${deletedItem.text}' deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
                                             viewModel.reinsertItem(deletedItem) // Use reinsertItem to undo
                                         }
@@ -261,7 +286,9 @@ fun TodoListScreen(
                     val completedList = groupedTasks[true] ?: emptyList()
                     if (uiState.showCompleted && completedList.isNotEmpty()) {
                         item { Spacer(modifier = Modifier.height(16.dp)); ListHeader("Completed Tasks (${completedList.size})") }
-                        itemsIndexed(items = completedList, key = { _, item -> "completed-${item.id}" }) { _, item ->
+                        itemsIndexed(
+                            items = completedList,
+                            key = { _, item -> "completed-${item.id}" }) { _, item ->
                             ToDoListItem(
                                 modifier = Modifier.animateItem(),
                                 item = item,
@@ -269,8 +296,13 @@ fun TodoListScreen(
                                     val originalStatus = toggledItem.isCompleted
                                     viewModel.toggleTaskCompletion(toggledItem) // Pass the whole item
                                     scope.launch {
-                                        val message = if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
-                                        val result = snackbarHostState.showSnackbar(message, actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val message =
+                                            if (!originalStatus) "Task '${toggledItem.text}' completed" else "Task '${toggledItem.text}' marked active"
+                                        val result = snackbarHostState.showSnackbar(
+                                            message,
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
                                             viewModel.toggleTaskCompletion(toggledItem) // Pass item to undo
                                         }
@@ -279,7 +311,11 @@ fun TodoListScreen(
                                 onDeleteItem = { deletedItem -> // Lambda now receives the item
                                     viewModel.deleteTask(deletedItem.id)
                                     scope.launch {
-                                        val result = snackbarHostState.showSnackbar("Task '${deletedItem.text}' deleted", actionLabel = "Undo", duration = SnackbarDuration.Short)
+                                        val result = snackbarHostState.showSnackbar(
+                                            "Task '${deletedItem.text}' deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
                                         if (result == SnackbarResult.ActionPerformed) {
                                             viewModel.reinsertItem(deletedItem) // Use reinsertItem to undo
                                         }

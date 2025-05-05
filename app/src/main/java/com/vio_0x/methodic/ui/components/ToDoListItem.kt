@@ -188,18 +188,32 @@ fun ToDoListItem(
 fun ToDoListItemPreview() {
     MethodicTheme {
         ToDoListItem(
-            item = ToDoItem(1, "Buy groceries", "Milk, Bread, Eggs", isCompleted = false, priority = TaskPriority.HIGH),
+            item = ToDoItem(
+                1,
+                "Buy groceries",
+                "Milk, Bread, Eggs",
+                isCompleted = false,
+                priority = TaskPriority.HIGH
+            ),
             onToggleComplete = {}, // Preview doesn't need action
             onDeleteItem = {}     // Preview doesn't need action
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ToDoListItemCompletedPreview() {
     MethodicTheme {
         ToDoListItem(
-            item = ToDoItem(2, "Walk the dog", isCompleted = true, priority = TaskPriority.LOW, createdAt = Date(System.currentTimeMillis() - 86400000), completedAt = Date()),
+            item = ToDoItem(
+                2,
+                "Walk the dog",
+                isCompleted = true,
+                priority = TaskPriority.LOW,
+                createdAt = Date(System.currentTimeMillis() - 86400000),
+                completedAt = Date()
+            ),
             onToggleComplete = {}, // Preview doesn't need action
             onDeleteItem = {}     // Preview doesn't need action
         )

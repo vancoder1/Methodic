@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
                     // Wipes and rebuilds instead of migrating if no Migration object.
                     // Migration is not part of this basic implementation.
                     .fallbackToDestructiveMigration(false)
-                .build()
+                    .build()
                 INSTANCE = instance
                 // return instance
                 instance
