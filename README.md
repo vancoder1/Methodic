@@ -50,6 +50,11 @@ To build and run Methodic on your local development environment, follow these st
 
 ## 📸 Screenshots
 
+<img src="https://github.com/user-attachments/assets/6d0cea97-8b2d-4e33-be79-6f12e5136bca" width="250px"/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<img src="https://github.com/user-attachments/assets/1494cf4c-4050-40f0-b8ee-47344469cdc6" width="250px"/>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<img src="https://github.com/user-attachments/assets/b490abf6-74b9-4406-ba20-a8b1e5657e1f" width="250px"/>
 
 
 ## 🛣️ Future Enhancements (Ideas)
